@@ -13,7 +13,9 @@ export default function TicketDisplayCard({ ticket, onReset }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full flex flex-col h-[80%]">
+    <div
+      className="relative bg-white rounded-lg shadow-lg p-8 max-w-lg w-full flex flex-col h-[80%] lg:h-[60%]"
+    >
       <h2 className="text-4xl font-bold text-gray-800">Your Ticket Number</h2>
       <p className="text-xl text-gray-600 mb-8">Nomor tiket Anda</p>
 
@@ -29,7 +31,6 @@ export default function TicketDisplayCard({ ticket, onReset }: Props) {
         </span>
       </p>
 
-      {/* RESET ACTION */}
       <button
         onClick={handleReset}
         className="mt-8 text-blue-600 hover:text-blue-800 underline text-sm self-center"

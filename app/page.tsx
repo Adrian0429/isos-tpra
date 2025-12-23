@@ -71,6 +71,9 @@ export default function TicketSubmission() {
           />
         )}
       </main>
+      <p className="absolute bottom-0 right-4 text-xs text-gray-500 italic">
+        Powered by Contract &amp; Compliance Dept.
+      </p>
     </div>
   );
 }

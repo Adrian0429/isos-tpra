@@ -13,7 +13,7 @@ export default function TicketDisplayCard({ ticket, onReset }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full flex flex-col">
+    <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full flex flex-col h-[80%]">
       <h2 className="text-4xl font-bold text-gray-800">Your Ticket Number</h2>
       <p className="text-xl text-gray-600 mb-8">Nomor tiket Anda</p>
 

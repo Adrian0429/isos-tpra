@@ -37,7 +37,7 @@ export default function TicketInputCard({ onSubmitSuccess, loading }: Props) {
   };
 
   return (
-    <div className="flex flex-col justify-between bg-white rounded-lg shadow-lg p-8 max-w-lg w-full h-[50%]">
+    <div className="flex flex-col justify-between bg-white rounded-lg shadow-lg p-8 max-w-lg w-full h-[80%]">
       <div>
         <h1 className="text-4xl font-bold text-gray-800">Submit Ticket</h1>
         <p className="text-xl text-gray-600 mt-2">

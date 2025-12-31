@@ -54,7 +54,7 @@ export default function QueuePicker() {
       document.cookie = `patient_ticket=${finalNumber}; max-age=3600; path=/`;
 
       setDisplayNumber(finalNumber);
-      setCountdown(10);
+      setCountdown(3);
       setTicketNumber("");
       setCounter((prev) => prev + 1);
     } catch {

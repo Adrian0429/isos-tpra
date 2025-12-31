@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 export default function QueuePicker() {
-  const [ticketNumber, setTicketNumber] = useState<string | null>(null);
+  const [ticketNumber, setTicketNumber] = useState<string>("");
   const [displayNumber, setDisplayNumber] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const [counter, setCounter] = useState(1);
 
   /* =========================
      Countdown logic
@@ -34,22 +35,10 @@ export default function QueuePicker() {
   ========================== */
   const formatNumber = (num: number) => num.toString().padStart(4, "0");
 
-  const getNextTicketNumber = async () => {
-    const res = await fetch("/api/get-last-ticket");
-    if (!res.ok) return "0001";
-
-    const json = await res.json();
-    const last = json?.data?.ticketNumber;
-
-    if (!last) return "0001";
-
-    return formatNumber(parseInt(last, 10) + 1);
-  };
-
   /* =========================
-     Your handleSubmit (unchanged logic)
+     Submit logic
   ========================== */
-  const handleSubmit = async (generatedNumber: string) => {
+  const handleSubmit = async (finalNumber: string) => {
     setLoading(true);
     setError("");
 
@@ -57,15 +46,17 @@ export default function QueuePicker() {
       const res = await fetch("/api/submit-ticket", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticketNumber: generatedNumber }),
+        body: JSON.stringify({ ticketNumber: finalNumber }),
       });
 
       if (!res.ok) throw new Error("Failed to submit ticket");
 
-      document.cookie = `patient_ticket=${generatedNumber}; max-age=3600; path=/`;
+      document.cookie = `patient_ticket=${finalNumber}; max-age=3600; path=/`;
 
-      setDisplayNumber(generatedNumber);
+      setDisplayNumber(finalNumber);
       setCountdown(10);
+      setTicketNumber("");
+      setCounter((prev) => prev + 1);
     } catch {
       setError("Failed to submit ticket");
     } finally {
@@ -76,12 +67,15 @@ export default function QueuePicker() {
   /* =========================
      Button action
   ========================== */
-  const handleGetNumber = async () => {
+  const handleSubmitTicket = async () => {
     if (loading || countdown !== null) return;
 
-    const nextNumber = await getNextTicketNumber();
-    setTicketNumber(nextNumber);
-    handleSubmit(nextNumber);
+    const finalNumber =
+      ticketNumber.trim() !== ""
+        ? ticketNumber.padStart(4, "0")
+        : formatNumber(counter);
+
+    handleSubmit(finalNumber);
   };
 
   return (
@@ -106,49 +100,71 @@ export default function QueuePicker() {
 
       {/* Main */}
       <div className="flex-1 flex gap-8 p-10">
-        {/* LEFT: Display (smaller) */}
-        <div className="w-3/5 flex flex-col items-center justify-center bg-white rounded-2xl shadow">
+        {/* LEFT */}
+        <div className="w-3/5 flex flex-col items-center justify-center bg-white rounded-2xl shadow text-center px-6">
           {displayNumber ? (
             <>
               <div className="text-[8rem] font-bold text-blue-600">
                 {displayNumber}
               </div>
-              <div className="text-xl text-gray-500 mt-4">
+              <p className="text-xl text-gray-600 mt-4">
+                Please head to the administration
+              </p>
+              <p className="text-lg text-gray-500">
+                Silahkan menuju meja administrasi
+              </p>
+              <div className="text-lg text-gray-400 mt-4">
                 Reset in {countdown}s
               </div>
             </>
           ) : (
-            <span className="text-3xl text-gray-400 text-center">
-              Tap button to get number
-            </span>
+            <div>
+              <span className="text-3xl text-gray-400">
+                Get your queue number and type it in on the right side
+              </span>
+              <br />
+              <br />
+              <br />
+              <span className="text-3xl text-gray-400">
+                Ambil nomor dan ketik pada sisi kanan
+              </span>
+            </div>
           )}
         </div>
 
-        {/* RIGHT: Button + Instructions */}
-        <div className="flex-1 flex flex-col justify-center gap-8">
+        {/* RIGHT */}
+        <div className="flex-1 flex flex-col justify-center gap-6">
           <div className="bg-white rounded-xl p-6 shadow text-lg text-gray-700 space-y-2">
             <p className="font-semibold">Instructions</p>
+            <p>👉 Get your ticket number on the counter, then type it in.</p>
             <p>
-              👉 Press <b>GET NUMBER</b> to receive your queue number.
-            </p>
-            <p>
-              👉 The number will be shown for <b>10 seconds</b>.
+              👉 After you submit the number, please head to the administration.
             </p>
             <hr />
             <p className="font-semibold">Petunjuk</p>
+            <p>👉 Ambil nomor antrian dimeja, dan ketik di kolom bawah</p>
             <p>
-              👉 Tekan <b>GET NUMBER</b> untuk mendapatkan nomor antrian.
-            </p>
-            <p>
-              👉 Nomor akan tampil selama <b>10 detik</b>.
+              👉 Setelah memasukkan nomornya dan submit, silahkan menuju meja
+              administrasi
             </p>
           </div>
+
+          <input
+            type="text"
+            inputMode="numeric"
+            placeholder="Optional: manual ticket number"
+            value={ticketNumber}
+            onChange={(e) => setTicketNumber(e.target.value)}
+            disabled={loading || countdown !== null}
+            className="w-full h-14 px-4 text-xl text-gray-800 rounded-xl border border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          />
+
           <button
-            onClick={handleGetNumber}
+            onClick={handleSubmitTicket}
             disabled={loading || countdown !== null}
             className="w-full h-24 text-3xl font-semibold rounded-2xl bg-blue-600 text-white active:scale-95 disabled:opacity-50"
           >
-            {loading ? "Processing..." : "GET NUMBER"}
+            {loading ? "Processing..." : "SUBMIT TICKET"}
           </button>
 
           {error && <p className="text-red-500 text-center text-lg">{error}</p>}
